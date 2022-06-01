@@ -22,10 +22,10 @@ class Chart extends StatelessWidget {
         }
       }
 
-      print(DateFormat.E().format(weekDay));
-      print(totalSum);
+      // print(DateFormat.E().format(weekDay));
+      // print(totalSum);
       return {
-        'Day': DateFormat.E().format(weekDay).substring(0, 1),
+        'Day': DateFormat.E().format(weekDay),
         'Amount': totalSum,
       };
     }).reversed.toList();
@@ -45,18 +45,19 @@ class Chart extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(10),
         child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: groupedTransactionValues.map((tx) {
-              return Flexible(
-                fit: FlexFit.tight,
-                child: chartBar(
-                    tx['Day'],
-                    tx['Amount'],
-                    totalSpending == 0
-                        ? 0.0
-                        : (tx['Amount'] as double) / totalSpending),
-              );
-            }).toList()),
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: groupedTransactionValues.map((tx) {
+            return Flexible(
+              fit: FlexFit.tight,
+              child: chartBar(
+                  tx['Day'],
+                  tx['Amount'],
+                  totalSpending == 0
+                      ? 0.0
+                      : (tx['Amount'] as double) / totalSpending),
+            );
+          }).toList(),
+        ),
       ),
     );
   }

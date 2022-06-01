@@ -49,7 +49,11 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Transaction> get _recentTransactions {
     return _userTransactions.where((tx) {
       return tx.date.isAfter(
-        DateTime.now().subtract(Duration(days: 7)),
+        DateTime.now().subtract(
+          Duration(
+            days: 7,
+          ),
+        ),
       );
     }).toList();
   }
@@ -96,7 +100,9 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () => _startAddNewTransaction(context),
+            onPressed: () {
+              _startAddNewTransaction(context);
+            },
           ),
         ],
       ),

@@ -10,13 +10,15 @@ class chartBar extends StatelessWidget {
   chartBar(this.label, this.spendingAmount, this.spendingPercentage);
   @override
   Widget build(BuildContext context) {
-    print(spendingPercentage);
+    // print(spendingPercentage);
     return Column(
       children: <Widget>[
         Container(
-            height: 20,
-            child: FittedBox(
-                child: Text('\$${spendingAmount.toStringAsFixed(0)}'))),
+          height: 20,
+          child: FittedBox(
+            child: Text('\$${spendingAmount.toStringAsFixed(0)}'),
+          ),
+        ),
         SizedBox(
           height: 4,
         ),

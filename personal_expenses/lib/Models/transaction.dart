@@ -12,4 +12,7 @@ class Transaction {
     @required this.amount,
     @required this.date,
   });
+
+  // Transaction(String id, String title, double amount, DateTime date);
+
 }
