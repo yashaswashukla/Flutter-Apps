@@ -102,6 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool _showChart = false;
 
+//Builder method for calling the appbar
+
   Widget _buildAppBar() {
     return AppBar(
       title: Text(
@@ -117,6 +119,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
     );
   }
+
+  //Builder method for Portrait page as we have to return more than one widget so we are returning a
+  //list of widgets
 
   List<Widget> _buildPortraitWidget(MediaQueryData mediaQuery, AppBar appBar) {
     return [
@@ -157,8 +162,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 mediaQuery.padding.top) *
             0.7,
         child: TransactionList(_userTransactions, _deleteTransaction));
-    //Landscape Widgets
 
+    //Landscape Widgets
     final landscapeChart = Container(
         height: (mediaQuery.size.height -
                 appBar.preferredSize.height -
