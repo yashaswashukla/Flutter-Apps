@@ -102,16 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool _showChart = false;
 
-  @override
-  Widget build(BuildContext context) {
-    //Storing the value of media query
-    final mediaQuery = MediaQuery.of(context);
-
-    //Checking if the device is in landscape or not
-    final isLandscape = mediaQuery.orientation == Orientation.landscape;
-
-    //Defining the appBar in a variable
-    final appBar = AppBar(
+  Widget _buildAppBar() {
+    return AppBar(
       title: Text(
         'Personal Expenses',
       ),
@@ -124,6 +116,37 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ],
     );
+  }
+
+  List<Widget> _buildPortraitWidget(MediaQueryData mediaQuery, AppBar appBar) {
+    return [
+      Container(
+        height: (mediaQuery.size.height -
+                appBar.preferredSize.height -
+                mediaQuery.padding.top) *
+            .3,
+        child: Chart(_recentTransactions),
+      ),
+      Container(
+        height: (mediaQuery.size.height -
+                appBar.preferredSize.height -
+                mediaQuery.padding.top) *
+            0.7,
+        child: TransactionList(_userTransactions, _deleteTransaction),
+      ),
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    //Storing the value of media query
+    final mediaQuery = MediaQuery.of(context);
+
+    //Checking if the device is in landscape or not
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+
+    //Defining the appBar in a variable
+    final PreferredSizeWidget appBar = _buildAppBar();
 
     //Defining all the widgets in form of variables
 
@@ -134,14 +157,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 mediaQuery.padding.top) *
             0.7,
         child: TransactionList(_userTransactions, _deleteTransaction));
-
-    final portraitChart = Container(
-        height: (mediaQuery.size.height -
-                appBar.preferredSize.height -
-                mediaQuery.padding.top) *
-            .3,
-        child: Chart(_recentTransactions));
-
     //Landscape Widgets
 
     final landscapeChart = Container(
@@ -155,7 +170,8 @@ class _MyHomePageState extends State<MyHomePage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text('Show Chart'),
-        Switch(
+        Switch.adaptive(
+          activeColor: Theme.of(context).accentColor,
           value: _showChart,
           onChanged: (val) {
             setState(() {
@@ -179,8 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
             if (isLandscape) _showChart ? landscapeChart : txListWidget,
 
             //If not landscape then we will show the normal widget with smaller constraints in the app
-            if (!isLandscape) portraitChart,
-            if (!isLandscape) txListWidget,
+            if (!isLandscape) ..._buildPortraitWidget(mediaQuery, appBar),
           ],
         ),
       ),
