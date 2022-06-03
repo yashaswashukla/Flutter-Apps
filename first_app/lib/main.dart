@@ -122,7 +122,8 @@ class _myAppState extends State<myApp> {
       //Now this is a list of Maps
       {
         'questionText':
-            'What\'s your favourite color', //Map with key value pair and value is a string as well as the key
+            'What\'s your favourite color', 
+          //Map with key value pair and value is a string as well as the key
         'answer': [
           {'text': 'Black', 'score': 10},
           {'text': 'Yellow', 'score': 7},

@@ -1,10 +1,21 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import './Widgets/chart.dart';
 import './Widgets/new_transaction.dart';
 import './Widgets/transaction_list.dart';
 import './Models/Transaction.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  //Only providing the orientations we want not other
+  // WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setPreferredOrientations(
+  //   [
+  //     DeviceOrientation.portraitDown,
+  //     DeviceOrientation.portraitUp,
+  //   ],
+  // );
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -89,28 +100,87 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  bool _showChart = false;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Personal Expenses',
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              _startAddNewTransaction(context);
-            },
-          ),
-        ],
+    //Storing the value of media query
+    final mediaQuery = MediaQuery.of(context);
+
+    //Checking if the device is in landscape or not
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+
+    //Defining the appBar in a variable
+    final appBar = AppBar(
+      title: Text(
+        'Personal Expenses',
       ),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.add),
+          onPressed: () {
+            _startAddNewTransaction(context);
+          },
+        ),
+      ],
+    );
+
+    //Defining all the widgets in form of variables
+
+    //Portait Widgets of char and List
+    final txListWidget = Container(
+        height: (mediaQuery.size.height -
+                appBar.preferredSize.height -
+                mediaQuery.padding.top) *
+            0.7,
+        child: TransactionList(_userTransactions, _deleteTransaction));
+
+    final portraitChart = Container(
+        height: (mediaQuery.size.height -
+                appBar.preferredSize.height -
+                mediaQuery.padding.top) *
+            .3,
+        child: Chart(_recentTransactions));
+
+    //Landscape Widgets
+
+    final landscapeChart = Container(
+        height: (mediaQuery.size.height -
+                appBar.preferredSize.height -
+                MediaQuery.of(context).padding.top) *
+            .7,
+        child: Chart(_recentTransactions));
+
+    final switchRow = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text('Show Chart'),
+        Switch(
+          value: _showChart,
+          onChanged: (val) {
+            setState(() {
+              _showChart = val;
+            });
+          },
+        ),
+      ],
+    );
+
+    // Widgets in the apps
+    return Scaffold(
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Chart(_recentTransactions),
-            TransactionList(_userTransactions, _deleteTransaction),
+            //Checking if we have to show the switch or not
+            if (isLandscape) switchRow,
+            //This is when our device is in landscape mode
+            if (isLandscape) _showChart ? landscapeChart : txListWidget,
+
+            //If not landscape then we will show the normal widget with smaller constraints in the app
+            if (!isLandscape) portraitChart,
+            if (!isLandscape) txListWidget,
           ],
         ),
       ),
