@@ -23,8 +23,8 @@ class homePage extends StatefulWidget {
 }
 
 class _homePageState extends State<homePage> {
-  var userQuestion = "Hello";
-  var userAnswer = "Answer";
+  var userQuestion = "0";
+  var userAnswer = "animesh chutiya hai";
 
   final List<String> buttons = [
     "C",

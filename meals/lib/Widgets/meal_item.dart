@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../models/meal.dart';
+import '../Models/meal.dart';
 import '../Screens/meal_detail_screen.dart';
 
 class MealItem extends StatelessWidget {
@@ -57,6 +57,10 @@ class MealItem extends StatelessWidget {
       MealDetailScreen.routeName,
       arguments: id,
     );
+    //     .then((result) {
+    //   if (result != null) {
+    //     removeItem(result);
+    //   }
   }
 
   @override

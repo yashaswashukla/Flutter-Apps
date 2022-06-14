@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import '../dummy_data.dart';
 
 class MealDetailScreen extends StatelessWidget {
+  final Function toggleFav;
+  final Function isMealFavorite;
+  MealDetailScreen(this.toggleFav, this.isMealFavorite);
+
   static const routeName = '/meal-details';
 
   Widget buildSectionTitle(BuildContext context, String title) {
@@ -88,6 +92,14 @@ class MealDetailScreen extends StatelessWidget {
             buildContainer(buildStepView(selectedMeal.steps), 300),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(
+          isMealFavorite(mealId) ? Icons.star : Icons.star_border,
+        ),
+        onPressed: () {
+          toggleFav(mealId);
+        },
       ),
     );
   }
