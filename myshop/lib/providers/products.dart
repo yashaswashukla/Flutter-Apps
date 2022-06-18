@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../Models/product.dart';
+import './product.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -38,10 +38,29 @@ class Products with ChangeNotifier {
     ),
   ];
 
+  // var _showFavoritesOnly = false;
+
+  // void showFavoriteOnly() {
+  //   _showFavoritesOnly = true;
+  //   notifyListeners();
+  // }
+
+  // void showAll() {
+  //   _showFavoritesOnly = false;
+  //   notifyListeners();
+  // }
+
+  List<Product> get favoriteItems {
+    return _items.where((productItem) => productItem.isFavorite).toList();
+  }
+
   List<Product> get items {
     //We return a copy of the _items so because in dart we pass data in reference type
     //And if we passed the _items to another place then we would have direct access to the entire list of the Products and we could change the data of that list
     //Hence we return the list of Products within the items list as a list
+    // if (_showFavoritesOnly) {
+    //   return _items.where((productItems) => productItems.isFavorite).toList();
+    // }
     return [..._items];
   }
 
