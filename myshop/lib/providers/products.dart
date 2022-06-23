@@ -64,8 +64,18 @@ class Products with ChangeNotifier {
     return [..._items];
   }
 
-  void addProduct() {
+  void addProduct(Product product) {
+    
+
     //_items.add(value);
+    final newProduct = Product(
+        title: product.title,
+        id: DateTime.now().toString(),
+        imageUrl: product.imageUrl,
+        price: product.price,
+        description: product.description);
+
+    _items.add(newProduct);
 
     //This will notify all the widgets which are interested in the List of items that items list has been modified
     notifyListeners();
@@ -73,5 +83,21 @@ class Products with ChangeNotifier {
 
   Product findById(String id) {
     return _items.firstWhere((item) => item.id == id);
+  }
+
+  void updateProduct(String id, Product newProduct) {
+    final prodIndex = _items.indexWhere((prod) => prod.id == id);
+
+    if (prodIndex >= 0) {
+      _items[prodIndex] = newProduct;
+    } else {
+      print('.......');
+    }
+    notifyListeners();
+  }
+
+  void deleteProduct(String id) {
+    _items.removeWhere((prod) => prod.id == id);
+    notifyListeners();
   }
 }
