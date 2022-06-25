@@ -35,7 +35,7 @@ final List<String> buttons = [
   '+',
   '0',
   '.',
-  'Ans',
+  '00',
   '=',
 ];
 
