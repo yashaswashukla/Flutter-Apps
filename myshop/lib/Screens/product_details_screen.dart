@@ -43,7 +43,8 @@ class ProductDetailScreen extends StatelessWidget {
                 loadedProduct.description,
                 style: TextStyle(),
               ),
-            )
+            ),
+            
           ],
         ),
       ),
