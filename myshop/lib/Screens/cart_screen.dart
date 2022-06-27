@@ -38,21 +38,7 @@ class CartScreen extends StatelessWidget {
                     ),
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  FlatButton(
-                    onPressed: () {
-                      Provider.of<Orders>(context, listen: false).addOrder(
-                        cart.items.values.toList(),
-                        cart.totalAmount,
-                      );
-                      cart.clear();
-                    },
-                    child: Text(
-                      'Order now!',
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  )
+                  order_button(cart: cart)
                 ],
               ),
             ),
@@ -74,6 +60,51 @@ class CartScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class order_button extends StatefulWidget {
+  const order_button({
+    Key key,
+    @required this.cart,
+  }) : super(key: key);
+
+  final Cart cart;
+
+  @override
+  State<order_button> createState() => _order_buttonState();
+}
+
+class _order_buttonState extends State<order_button> {
+  var _isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton(
+      onPressed: (widget.cart.totalAmount <= 0 || _isLoading)
+          ? null
+          : () async {
+              setState(() {
+                _isLoading = true;
+              });
+              await Provider.of<Orders>(context, listen: false).addOrder(
+                widget.cart.items.values.toList(),
+                widget.cart.totalAmount,
+              );
+              widget.cart.clear();
+              setState(() {
+                _isLoading = false;
+              });
+            },
+      child: _isLoading
+          ? CircularProgressIndicator()
+          : Text(
+              'Order now!',
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
     );
   }
 }

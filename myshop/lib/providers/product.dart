@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Product with ChangeNotifier {
   final String id;
@@ -17,8 +19,33 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  void toggleFavorite() {
+  void _rollBack(bool newValue) {
+    isFavorite = newValue;
+    notifyListeners();
+  }
+
+  Future<void> toggleFavorite() async {
+    final oldStatus = isFavorite;
+
+    final url = Uri.https('flutter-update-f199a-default-rtdb.firebaseio.com',
+        'products/$id.json');
+
     isFavorite = !isFavorite;
     notifyListeners();
+    try {
+      final response = await http.patch(
+        url,
+        body: json.encode(
+          {
+            'isFavorite': isFavorite,
+          },
+        ),
+      );
+      if (response.statusCode >= 400) {
+        _rollBack(oldStatus);
+      }
+    } catch (error) {
+      _rollBack(oldStatus);
+    }
   }
 }

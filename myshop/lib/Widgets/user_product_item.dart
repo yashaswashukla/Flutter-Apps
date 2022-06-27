@@ -12,6 +12,7 @@ class UserProductItem extends StatelessWidget {
   UserProductItem(this.id, this.title, this.imageUrl);
   @override
   Widget build(BuildContext context) {
+    final scaffold = Scaffold.of(context);
     return ListTile(
       title: Text(title),
       leading: CircleAvatar(
@@ -31,8 +32,22 @@ class UserProductItem extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.delete),
               color: Theme.of(context).errorColor,
-              onPressed: () {
-                Provider.of<Products>(context, listen: false).deleteProduct(id);
+              onPressed: () async {
+                try {
+                  await Provider.of<Products>(context, listen: false)
+                      .deleteProduct(id);
+                } catch (error) {
+                  //As this entire function is inside an async and wrapped inside a future we cannot get scaffold at this time
+                  //Hence to resolve this we can store scaffold.of(context) in a constant and then use that instead
+                  scaffold.showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Deletion failed!',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                }
               },
             )
           ],

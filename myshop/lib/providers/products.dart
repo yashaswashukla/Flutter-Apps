@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import './product.dart';
+import '../Models/http_exception.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -110,10 +111,24 @@ class Products with ChangeNotifier {
     return _items.firstWhere((item) => item.id == id);
   }
 
-  void updateProduct(String id, Product newProduct) {
+  void updateProduct(String id, Product newProduct) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
 
     if (prodIndex >= 0) {
+      final url = Uri.https('flutter-update-f199a-default-rtdb.firebaseio.com',
+          'products/$id.json');
+
+      await http.patch(
+        url,
+        body: json.encode(
+          {
+            'title': newProduct.title,
+            'description': newProduct.description,
+            'price': newProduct.price,
+            'imageUrl': newProduct.imageUrl,
+          },
+        ),
+      );
       _items[prodIndex] = newProduct;
     } else {
       print('.......');
@@ -121,8 +136,63 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteProduct(String id) {
-    _items.removeWhere((prod) => prod.id == id);
+  //In this method instead of updating the values using async await we will
+  //Optimistically update the values
+  //Just to show an alternative method of async await
+
+  // void deleteProduct(String id) {
+  //   final url = Uri.https(
+  //       'flutter-update-f199a-default-rtdb.firebaseio.com', 'products/$id');
+
+  //   //Copying the value which will be deleted
+  //   final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
+  //   var existingProduct = _items[existingProductIndex];
+
+  //   //Hence this will keep the deleted item in the memory
+  //   _items.removeAt(existingProductIndex);
+
+  //   //In this method we can roll back if the element which we were trying to delete wasn't deleted
+  //   //But, if the deletion is successful then we remove the reference to that product element from the memory
+  //   notifyListeners();
+  //   //Delete does not throw an error if the server returns a error status code
+  //   //Even though an error occurs delete goes into then block
+  //   http.delete(url).then((response) {
+  //     if (response.statusCode >= 400) {
+  //       throw HttpException('Could not delete Product');
+  //     }
+  //     existingProduct = null;
+  //   }).catchError((_) {
+  //     _items.insert(existingProductIndex, existingProduct);
+  //     notifyListeners();
+  //   });
+  // }
+
+  //In order to stay consistent with the rest of the code we will use async await
+
+  void deleteProduct(String id) async {
+    final url = Uri.https('flutter-update-f199a-default-rtdb.firebaseio.com',
+        'products/$id.json');
+
+    //Copying the value which will be deleted
+    final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
+    var existingProduct = _items[existingProductIndex];
+
+    //Hence this will keep the deleted item in the memory
+    _items.removeAt(existingProductIndex);
+
+    //In this method we can roll back if the element which we were trying to delete wasn't deleted
+    //But, if the deletion is successful then we remove the reference to that product element from the memory
+    notifyListeners();
+    //Delete does not throw an error if the server returns a error status code
+    //Even though an error occurs delete goes into then block
+
+    final response = await http.delete(url);
+    if (response.statusCode >= 400) {
+      _items.insert(existingProductIndex, existingProduct);
+      throw HttpException('Could not delete Product');
+    } //throw is like return cancels the further execution
+    existingProduct = null;
+
     notifyListeners();
   }
 
@@ -134,6 +204,7 @@ class Products with ChangeNotifier {
 
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<Product> loadedProducts = [];
+
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(
           Product(
