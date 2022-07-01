@@ -23,6 +23,8 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _isInit = true;
   var _isLoading = false;
 
+  static const routeName = 'Products-Overview';
+
   @override
   void initState() {
     //Provider.of<Products>(context).fetchAndSetProducts();
