@@ -5,6 +5,7 @@ import './Screens/products_overview_screen.dart';
 import './Screens/product_details_screen.dart';
 import './providers/products.dart';
 import './providers/cart.dart';
+import './providers/auth.dart';
 import './Screens/cart_screen.dart';
 import './providers/orders.dart';
 import './Screens/orders_screen.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
     //If we reuse any old class then we should use the value constructor
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (ctx) => Auth()),
         ChangeNotifierProvider(create: (ctx) => Products()),
         ChangeNotifierProvider(create: (ctx) => Cart()),
         ChangeNotifierProvider(create: (ctx) => Orders()),
@@ -38,7 +40,7 @@ class MyApp extends StatelessWidget {
         ),
         home: AuthScreen(),
         routes: {
-          ProductsOverviewScreen.routeName: (ctx) => ProductDetailScreen(),
+          ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen(),
           CartScreen.routeName: (ctx) => CartScreen(),
           ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
           OrderScreen.routeName: (ctx) => OrderScreen(),
