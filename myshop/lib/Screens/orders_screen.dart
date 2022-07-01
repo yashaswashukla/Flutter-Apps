@@ -21,7 +21,7 @@ class OrderScreen extends StatelessWidget {
 
   //   super.initState();
   // }
-
+  static const routeName = 'order-screen';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
