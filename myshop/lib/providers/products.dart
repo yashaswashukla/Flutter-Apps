@@ -57,6 +57,10 @@ class Products with ChangeNotifier {
     return _items.where((productItem) => productItem.isFavorite).toList();
   }
 
+  final String authToken;
+  final String userId;
+  Products(this.authToken, this._items, this.userId);
+
   List<Product> get items {
     //We return a copy of the _items so because in dart we pass data in reference type
     //And if we passed the _items to another place then we would have direct access to the entire list of the Products and we could change the data of that list
@@ -68,8 +72,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    var url = Uri.https(
-        'flutter-update-f199a-default-rtdb.firebaseio.com', 'products.json');
+    final url = Uri.parse(
+        'https://flutter-update-f199a-default-rtdb.firebaseio.com/products.json?auth=$authToken');
 
     try {
       //This sends a post request to the url
@@ -80,9 +84,9 @@ class Products with ChangeNotifier {
             'title': product.title,
             'description': product.description,
             'price': product.price,
-            'isFavorite': product.isFavorite,
             'imageUrl': product.imageUrl,
             'id': product.id,
+            'creatorId': userId,
           },
         ),
       );
@@ -115,8 +119,8 @@ class Products with ChangeNotifier {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
 
     if (prodIndex >= 0) {
-      final url = Uri.https('flutter-update-f199a-default-rtdb.firebaseio.com',
-          'products/$id.json');
+      final url = Uri.parse(
+          'https://flutter-update-f199a-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken');
 
       await http.patch(
         url,
@@ -170,8 +174,8 @@ class Products with ChangeNotifier {
   //In order to stay consistent with the rest of the code we will use async await
 
   void deleteProduct(String id) async {
-    final url = Uri.https('flutter-update-f199a-default-rtdb.firebaseio.com',
-        'products/$id.json');
+    final url = Uri.parse(
+        'https://flutter-update-f199a-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken');
 
     //Copying the value which will be deleted
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
@@ -196,13 +200,23 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchAndSetProducts() async {
-    final url = Uri.https(
-        'flutter-update-f199a-default-rtdb.firebaseio.com', 'products.json');
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    final filterString =
+        filterByUser ? '&orderBy="creatorId"&equalTo="$userId"' : '';
+    var url = Uri.parse(
+        'https://flutter-update-f199a-default-rtdb.firebaseio.com/products.json?auth=$authToken$filterString');
     try {
       final response = await http.get(url);
 
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      if (extractedData == null) return null;
+
+      url = Uri.parse(
+          'https://flutter-update-f199a-default-rtdb.firebaseio.com/userFavorites/$userId.json?auth=$authToken');
+
+      final favoriteResponse = await http.get(url);
+      final favoriteData = json.decode(favoriteResponse.body);
+
       final List<Product> loadedProducts = [];
 
       extractedData.forEach((prodId, prodData) {
@@ -213,7 +227,10 @@ class Products with ChangeNotifier {
             description: prodData['description'],
             imageUrl: prodData['imageUrl'],
             price: prodData['price'],
-            isFavorite: prodData['isFavorite'],
+            isFavorite: favoriteData == null
+                ? false
+                : favoriteData[prodId] ??
+                    false, //?? checks if the value is null then it will fallback to the next value
           ),
         );
       });
