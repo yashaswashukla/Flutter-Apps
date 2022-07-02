@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -43,8 +41,6 @@ class Auth with ChangeNotifier {
     final timeToExpiry = _expiryDate.difference(DateTime.now()).inSeconds;
     _authTimer = Timer(Duration(seconds: timeToExpiry), logout);
   }
-
-  
 
   Future<void> _authenticate(
       String email, String password, String urlSegment) async {
